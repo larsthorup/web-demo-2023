@@ -14,10 +14,11 @@ describe(AlbumPicker.name, () => {
     const user = userEvent.setup();
 
     const rihannaUrl =
-      "https://musicbrainz.org/ws/2/release?fmt=json&query=artist:rihanna";
+      "https://musicbrainz.org/ws/2/release?fmt=json&query=artist:rihanna AND date:";
     const mockFetch = vi
       .spyOn(window, "fetch")
       .mockImplementation(async (url: RequestInfo | URL) => {
+        console.log(url);
         if (url === rihannaUrl) {
           return {
             json: async () => mockResponse,
@@ -35,7 +36,7 @@ describe(AlbumPicker.name, () => {
     const form = screen.getByRole("form", { name: "search" });
     fireEvent.submit(form);
 
-    await screen.findByText("Love on the Brain");
+    await screen.findByText("Love on the Brain (2017-01-20)");
     // debug();
   });
 });
