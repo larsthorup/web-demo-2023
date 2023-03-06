@@ -4,30 +4,52 @@ export default function AlbumPicker() {
   const [albums, setAlbums] = useState<string[]>([]);
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    // const target = e.target as typeof e.target & {
-    //   artist: { value: string };
-    // };
-    // const artist = encodeURIComponent(target.artist.value);
     const form = e.target as HTMLFormElement;
     const formElements = form.elements as typeof form.elements & {
-      artist: { value: string };
+      artist: HTMLInputElement;
+      date: HTMLInputElement;
     };
+    if (
+      formElements.artist.value === "lars" &&
+      formElements.date.value === "1966"
+    ) {
+      formElements.artist.setCustomValidity("Lars was born in 1966");
+      return;
+    }
     const artist = encodeURIComponent(formElements.artist.value);
-    console.log({ artist, elements: form.elements });
-    const url = `https://musicbrainz.org/ws/2/release?fmt=json&query=artist:${artist}`;
+    const date = encodeURIComponent(formElements.date.value);
+    const query = `artist:${artist} AND date:${date}`;
+    const url = `https://musicbrainz.org/ws/2/release?fmt=json&query=${query}`;
     const response = await fetch(url);
     const mbResult = (await response.json()) as {
-      releases: { title: string }[];
+      releases: { title: string; date: string }[];
     };
     const { releases } = mbResult;
-    setAlbums(releases.map(({ title }) => title));
+    setAlbums(releases.map(({ title, date }) => `${title} (${date})`));
+  }
+  function onValidate(e: FormEvent) {
+    const target = e.target as HTMLInputElement;
+    if (target.validity.badInput || target.validity.rangeUnderflow) {
+      target.setCustomValidity("Please enter a year after 1950");
+    } else {
+      target.setCustomValidity("");
+    }
   }
   return (
     <form onSubmit={handleSubmit} name="search" aria-label="search">
       <label>
         Artist name:
-        <input name="artist" />
+        <input name="artist" autoFocus={true} />
       </label>
+      <br />
+      <label htmlFor="date">Release date:</label>
+      <input
+        id="date"
+        name="date"
+        type="number"
+        min={1950}
+        onInput={onValidate}
+      />
       <button type="submit">Search</button>
       <p>Albums:</p>
       <ol>
