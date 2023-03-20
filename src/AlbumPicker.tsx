@@ -1,6 +1,8 @@
 import { useState, FormEvent } from "react";
 
 export default function AlbumPicker() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [albums, setAlbums] = useState<string[]>([]);
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -20,12 +22,33 @@ export default function AlbumPicker() {
     const date = encodeURIComponent(formElements.date.value);
     const query = `artist:${artist} AND date:${date}`;
     const url = `https://musicbrainz.org/ws/2/release?fmt=json&query=${query}`;
-    const response = await fetch(url);
-    const mbResult = (await response.json()) as {
-      releases: { title: string; date: string }[];
-    };
-    const { releases } = mbResult;
-    setAlbums(releases.map(({ title, date }) => `${title} (${date})`));
+    setLoading(true);
+    try {
+      const response = await fetch(url);
+      const mbResult = (await response.json()) as {
+        releases: { title: string; date: string }[];
+      };
+      const { releases } = mbResult;
+      setAlbums(releases.map(({ title, date }) => `${title} (${date})`));
+      const logResponse = await fetch(
+        "https://eoy1vosu2h8dew3.m.pipedream.net",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url,
+            count: releases.length,
+          }),
+        }
+      );
+      if (!logResponse.ok) {
+        setError("Could not log search");
+      }
+    } finally {
+      setLoading(false);
+    }
   }
   function onValidate(e: FormEvent) {
     const target = e.target as HTMLInputElement;
@@ -51,12 +74,18 @@ export default function AlbumPicker() {
         onInput={onValidate}
       />
       <button type="submit">Search</button>
-      <p>Albums:</p>
-      <ol>
-        {albums.map((album) => (
-          <li>{album}</li>
-        ))}
-      </ol>
+      {error && <p>{error}</p>}
+      {loading && <p>Loading...</p>}
+      {!loading && (
+        <>
+          <p>Albums:</p>
+          <ol>
+            {albums.map((album, index) => (
+              <li key={index}>{album}</li>
+            ))}
+          </ol>
+        </>
+      )}
     </form>
   );
 }

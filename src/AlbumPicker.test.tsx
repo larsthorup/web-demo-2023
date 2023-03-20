@@ -15,13 +15,17 @@ describe(AlbumPicker.name, () => {
 
     const rihannaUrl =
       "https://musicbrainz.org/ws/2/release?fmt=json&query=artist:rihanna AND date:";
+    const logUrl = "https://eoy1vosu2h8dew3.m.pipedream.net";
     const mockFetch = vi
       .spyOn(window, "fetch")
       .mockImplementation(async (url: RequestInfo | URL) => {
-        console.log(url);
         if (url === rihannaUrl) {
           return {
             json: async () => mockResponse,
+          } as Response;
+        } else if (url === logUrl) {
+          return {
+            ok: true,
           } as Response;
         } else {
           return {} as Response;
