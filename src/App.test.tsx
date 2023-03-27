@@ -5,6 +5,6 @@ import App from "./App";
 describe("App", () => {
   it("should render", () => {
     render(<App />);
-    expect(screen.getByLabelText("Artist name:")).toBeInTheDocument();
+    expect(screen.getByText("Album search")).toBeInTheDocument();
   });
 });
