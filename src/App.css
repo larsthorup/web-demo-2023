@@ -43,3 +43,15 @@
 input:invalid {
   border: 1px solid red;
 }
+
+.card {
+  transition: opacity 0.8s ease-in;
+}
+
+.card.navigating {
+  opacity: 0;
+}
+
+.card.navigated {
+  opacity: 1;
+}
