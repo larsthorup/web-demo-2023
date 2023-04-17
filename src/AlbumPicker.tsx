@@ -1,9 +1,12 @@
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import { useAlbumDispatch, useAlbumState } from "./AlbumContext";
 
 export default function AlbumPicker() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [albums, setAlbums] = useState<string[]>([]);
+  // const [albums, setAlbums] = useState<string[]>([]);
+  const albums = useAlbumState();
+  const dispatch = useAlbumDispatch();
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -29,7 +32,14 @@ export default function AlbumPicker() {
         releases: { title: string; date: string }[];
       };
       const { releases } = mbResult;
-      setAlbums(releases.map(({ title, date }) => `${title} (${date})`));
+      dispatch({
+        type: "search",
+        payload: {
+          artist,
+          date,
+          results: releases.map(({ title, date }) => `${title} (${date})`),
+        },
+      });
       const logResponse = await fetch(
         "https://eoy1vosu2h8dew3.m.pipedream.net",
         {
@@ -62,7 +72,7 @@ export default function AlbumPicker() {
     <form onSubmit={handleSubmit} name="search" aria-label="search">
       <label>
         Artist name:
-        <input name="artist" autoFocus={true} />
+        <input name="artist" autoFocus={true} defaultValue={albums.artist} />
       </label>
       <br />
       <label htmlFor="date">Release date:</label>
@@ -72,6 +82,7 @@ export default function AlbumPicker() {
         type="number"
         min={1950}
         onInput={onValidate}
+        defaultValue={albums.date}
       />
       <button type="submit">Search</button>
       {error && <p>{error}</p>}
@@ -80,7 +91,7 @@ export default function AlbumPicker() {
         <>
           <p>Albums:</p>
           <ol>
-            {albums.map((album, index) => (
+            {albums.results.map((album, index) => (
               <li key={index}>{album}</li>
             ))}
           </ol>

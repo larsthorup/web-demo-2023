@@ -1,9 +1,10 @@
-import { describe, vi, it, afterEach, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, describe, it, vi } from "vitest";
+import { debug } from "vitest-preview";
+import { AlbumProvider } from "./AlbumContext";
 import AlbumPicker from "./AlbumPicker";
 import mockResponse from "./release.json";
-import { debug } from "vitest-preview";
 
 describe(AlbumPicker.name, () => {
   afterEach(() => {
@@ -32,7 +33,11 @@ describe(AlbumPicker.name, () => {
         }
       });
 
-    render(<AlbumPicker />);
+    render(
+      <AlbumProvider albumState={{ results: [], artist: "", date: "" }}>
+        <AlbumPicker />
+      </AlbumProvider>
+    );
 
     const artistInput = screen.getByLabelText("Artist name:");
     await user.type(artistInput, "rihanna");

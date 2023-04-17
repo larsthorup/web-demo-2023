@@ -1,7 +1,7 @@
-import { useState, FormEvent, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import { useEffect, useState } from "react";
+import { AlbumProvider } from "./AlbumContext";
 import AlbumPicker from "./AlbumPicker";
+import "./App.css";
 
 function App() {
   const [page, setPage] = useState("count");
@@ -32,27 +32,29 @@ function App() {
   }
   const pageClasses = `card ${navigating ? "navigating" : "navigated"}`;
   return (
-    <div className="App">
-      <h1>Web Demo</h1>
-      <a onClick={(ev) => navigate(ev, "count")}>Count</a> |{" "}
-      <a onClick={(ev) => navigate(ev, "album")}>Album search</a>
-      <br />
-      {page === "count" && (
-        <div className={pageClasses}>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-        </div>
-      )}
-      {page === "album" && (
-        <div className={pageClasses}>
-          <AlbumPicker />
-        </div>
-      )}
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <AlbumProvider>
+      <div className="App">
+        <h1>Web Demo</h1>
+        <a onClick={(ev) => navigate(ev, "count")}>Count</a> |{" "}
+        <a onClick={(ev) => navigate(ev, "album")}>Album search</a>
+        <br />
+        {page === "count" && (
+          <div className={pageClasses}>
+            <button onClick={() => setCount((count) => count + 1)}>
+              count is {count}
+            </button>
+          </div>
+        )}
+        {page === "album" && (
+          <div className={pageClasses}>
+            <AlbumPicker />
+          </div>
+        )}
+        <p className="read-the-docs">
+          Click on the Vite and React logos to learn more
+        </p>
+      </div>
+    </AlbumProvider>
   );
 }
 
