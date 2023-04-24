@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { AlbumProvider } from "./AlbumContext";
 import AlbumPicker from "./AlbumPicker";
 import "./App.css";
+import { Login, initializeDescope } from "./Login";
+
+const descope = initializeDescope();
 
 function App() {
   const [page, setPage] = useState("count");
@@ -31,12 +34,20 @@ function App() {
     dispatchEvent(new PopStateEvent("popstate"));
   }
   const pageClasses = `card ${navigating ? "navigating" : "navigated"}`;
+  const imageUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Key_%28music%29_icon.svg/64px-Key_%28music%29_icon.svg.png`;
+  const href = "https://musicbrainz.org/";
+  // const href = 'javascript:prompt("Please enter your password")'; // URL injection example
+  // if (href.startsWith('javascript')) throw new Error("")
   return (
     <AlbumProvider>
       <div className="App">
+        <a href={href}>
+          <img src={imageUrl} />
+        </a>
         <h1>Web Demo</h1>
         <a onClick={(ev) => navigate(ev, "count")}>Count</a> |{" "}
-        <a onClick={(ev) => navigate(ev, "album")}>Album search</a>
+        <a onClick={(ev) => navigate(ev, "album")}>Album search</a> |{" "}
+        <a onClick={(ev) => navigate(ev, "login")}>Login</a>
         <br />
         {page === "count" && (
           <div className={pageClasses}>
@@ -48,6 +59,11 @@ function App() {
         {page === "album" && (
           <div className={pageClasses}>
             <AlbumPicker />
+          </div>
+        )}
+        {page === "login" && descope && (
+          <div className={pageClasses}>
+            <Login descope={descope} />
           </div>
         )}
         <p className="read-the-docs">
