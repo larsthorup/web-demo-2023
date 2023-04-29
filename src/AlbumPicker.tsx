@@ -14,7 +14,10 @@ export default function AlbumPicker() {
       artist: HTMLInputElement;
       date: HTMLInputElement;
     };
-    if (
+    if (formElements.date.value === "") {
+      formElements.date.setCustomValidity("Please enter a valid year");
+      return;
+    } else if (
       formElements.artist.value === "lars" &&
       formElements.date.value === "1966"
     ) {
